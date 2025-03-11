@@ -2,9 +2,9 @@
   "name": "practice",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "assets/js/index.js",
   "scripts": {
-    "start": "nodemon index"
+    "start": "nodemon assets/js/index"
   },
   "repository": {
     "type": "git",
