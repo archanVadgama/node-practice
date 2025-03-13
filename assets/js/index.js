@@ -1,56 +1,69 @@
-const http = require('http');
+const express = require('express');
 const fs = require('fs');
+const app = express();
 
-const server = http.createServer((req, res) => {
+// app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-  let contentToReplace = '';
-  switch (req.url) {
-    case '/':
-      contentToReplace = '<h1>Home Page</h1>';
-      break;
-    case '/blog':
-      contentToReplace = '<h1>Blog Page</h1>';
-      break;
-    case '/about':
-      contentToReplace = '<h1>About Page</h1>';
-      break;
-    default:
-      contentToReplace = '<h1>404 Page Not Found</h1>';
-      break;
-  }
+const FILE_PATH = "assets/users.json";
 
-  if (req.url === '/favicon.ico') return;
-
-  let logInfo = 'Visited URL ---> ' + req.url + ' --- Time Stamp ---> ' + new Date().toString() + '\n';
-  fs.appendFile('assets/site.log', logInfo, (err) => {
-    if (err) {
-      console.error('Error appending to log file:', err);
-    }
+const readJSON = (callback, res) => {
+  fs.readFile(FILE_PATH, (err, data) => {
+    if (err) return res.status(500).json({ error: err });
+    callback(JSON.parse(data));
   });
+};
 
-  fs.readFile('assets/site.log', 'utf8', (err, logData) => {
-    if (err) {
-      console.error('Error reading log file:', err);
-      res.writeHead(500);
-      res.end('Server Error');
-      return;
-    }
-
-    fs.readFile('index.html', 'utf8', (err, indexData) => {
-      if (err) {
-        console.error('Error reading index.html:', err);
-        res.writeHead(500);
-        res.end('Server Error');
-        return;
-      }
-
-      const modifiedIndex = indexData.replace('<replaceContent>', contentToReplace).replace('<logs>', logData);
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(modifiedIndex);
-    });
+const writeJSON = (data, res, message) => {
+  fs.writeFile(FILE_PATH, JSON.stringify(data), (err) => {
+    if (err) return res.status(500).json({ error: "Server Error" });
+    res.json({ message });
   });
+};
+
+app.get("/", (req, res) => {
+  readJSON((users) => {
+    const deletedUsers = users.filter(user => user.isDeleted).length;
+    res.json({ totalUsers: users.length, activeUsers: users.length - deletedUsers, deletedUsers });
+  }, res);
 });
 
-server.listen(8000, () => {
-  console.log('Server is running on http://localhost:8000');
+app.get("/all-user", (req, res) => {
+  readJSON(users => res.json(users), res);
 });
+
+app.get("/find-user/:id", (req, res) => {
+  readJSON((users) => {
+    const user = users.find(user => user.id == req.params.id);
+    res.json(user || { error: "User not found" });
+  }, res);
+});
+
+app.post("/add-user", (req, res) => {
+  readJSON((users) => {
+    const newUser = { id: users.length + 1, ...req.body, isDeleted: false };
+    writeJSON([...users, newUser], res, "New User Added");
+  }, res);
+});
+
+app.put("/edit-user/:id", (req, res) => {
+  readJSON((users) => {
+    const user = users.find(user => user.id == req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    Object.assign(user, req.body); 
+    writeJSON(users, res, "User Updated");
+  }, res);
+});
+
+app.delete("/delete-user/:id", (req, res) => {
+  readJSON((users) => {
+    const user = users.find(user => user.id == req.params.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.isDeleted = true;
+    writeJSON(users, res, "User Deleted");
+  }, res);
+});
+
+app.listen(8000, () => console.log('Server running on http://localhost:8000'));
