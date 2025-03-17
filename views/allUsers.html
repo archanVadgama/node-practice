@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <a href="/dashboard">Dashboard</a> &nbsp;&nbsp;
+    <a href="/all-user">All users</a> &nbsp;&nbsp;
+    <a href="/add-user">Add User</a> &nbsp;&nbsp;
+    <br>
+    <h1>All Users</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Age</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="setResponse">
+        </tbody>
+    </table>
+    <script>
+        fetch('/api/all-user').then(response => response.json()).then(data => {
+            let setResponse = '';
+            data.forEach(user => {
+                let isDeleted = user.isDeleted ? 'Restore' : 'Delete';
+                setResponse += `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.username}</td>
+                        <td>${user.age}</td>
+                        <td>
+                            <a href="/find-user/${user.id}">Edit</a>
+                            &nbsp;&nbsp;
+                            &nbsp;&nbsp;
+                            <a href="/delete-user/${user.id}">${isDeleted}</a></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('setResponse').innerHTML = setResponse;
+        });
+    </script>    
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogIn</title>
+</head>
+<body>
+    <a href="/dashboard">Dashboard</a> &nbsp;&nbsp;
+    <a href="/all-user">All users</a> &nbsp;&nbsp;
+    <a href="/add-user">Add User</a> &nbsp;&nbsp;
+    <br>
+    <h1>Dashboard</h1>
+    <span id="setResponse"></span>
+    <script>
+        fetch('/api/statics').then(response => response.json()).then(data => {
+            let setResponse = '';
+            for (const key in data) {
+                setResponse += `<p>${key} : ${data[key]}</p>`;
+            }
+            document.getElementById('setResponse').innerHTML = setResponse;
+        });
+    </script>    
+</body>
+</html>

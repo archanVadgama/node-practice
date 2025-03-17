@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Archan Vadgama",
+    "email": "archan4607@gmail.com",
+    "username": "adv4607",
+    "password": "adv4607",
+    "age": "21",
+    "isAdmin": true,
+    "isDeleted": false
+  },
+  {
+    "id": 2,
+    "name": "Archan",
+    "email": "adv4607@gmail.com",
+    "username": "adv46072",
+    "password": "adv46072",
+    "age": "19",
+    "isAdmin": false,
+    "isDeleted": true
+  },
+  {
+    "id": 3,
+    "name": "Archan Vadgama 2",
+    "email": "adv4607@gmail.com",
+    "username": "adv46073",
+    "password": "adv46073",
+    "age": "19",
+    "isAdmin": false,
+    "isDeleted": false
+  }
+]
