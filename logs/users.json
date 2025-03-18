@@ -12,7 +12,7 @@
   {
     "id": 2,
     "name": "Archan",
-    "email": "adv4607@gmail.com",
+    "email": "adv46037@gmail.com",
     "username": "1233444",
     "password": "adv46072",
     "age": "19",
@@ -22,7 +22,7 @@
   {
     "id": 3,
     "name": "Archan Vadgama 2",
-    "email": "adv4607@gmail.com",
+    "email": "adv46207@gmail.com",
     "username": "adv46073",
     "password": "adv46073",
     "age": "19",
@@ -32,7 +32,7 @@
   {
     "id": 4,
     "name": "1232123213",
-    "email": "archan.vadgama@simformsolutions.com",
+    "email": "archan.vadgama@test.com",
     "age": "12",
     "username": "adv4607",
     "isAdmin": false,
@@ -41,7 +41,7 @@
   {
     "id": 5,
     "name": "Archan",
-    "email": "adv4607@gmail.com",
+    "email": "adv416037@gmail.com",
     "age": "121",
     "username": "123",
     "isAdmin": false,

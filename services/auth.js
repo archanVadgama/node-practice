@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "Arc@120480";
+const JWT_SECRET = "Arc@123";
 
 function setToken(user) {
   return jwt.sign(user, JWT_SECRET);
