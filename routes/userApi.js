@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { readJSON, writeJSON } = require('../services/fileHandling');
-const { checkLogin } = require('../middleware/checkLogin')
 
-router.get("/statics", checkLogin, (req, res) => {
+router.get("/statics",  (req, res) => {
   readJSON((users) => {
     const deletedUsers = users.filter(user => user.isDeleted).length;
     res.sendFile('/dashboard.html', { root: 'views' });
@@ -24,10 +23,8 @@ router.get("/find-user/:id", (req, res) => {
 });
 
 router.post("/add-user", (req, res) => {
-  console.log("req.body");
-  console.log(req.body);
   readJSON((users) => {
-    const newUser = { id: users.length + 1, ...req.body, isDeleted: false };
+    const newUser = { id: users.length + 1, ...req.body, isAdmin: false, isDeleted: false };
     writeJSON([...users, newUser], res, "New User Added");
   }, res);
 });
@@ -50,6 +47,16 @@ router.delete("/delete-user/:id", (req, res) => {
     user.isDeleted = !user.isDeleted ?  true : false
     writeJSON(users, res, !user.isDeleted ? "User Deleted" : "User Restored");
   }, res);
+});
+
+router.delete("/hard-delete-user/:id", (req, res) => {
+    readJSON((users) => {
+        const userIndex = users.findIndex(user => user.id == req.params.id);
+        if (userIndex === -1) return res.status(404).json({ error: "User not found" });
+
+        users.splice(userIndex, 1); // Remove the user from the array
+        writeJSON(users, res, "User Permanently Deleted");
+    }, res);
 });
 
 module.exports = router;

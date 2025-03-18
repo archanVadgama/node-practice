@@ -13,11 +13,11 @@
     "id": 2,
     "name": "Archan",
     "email": "adv4607@gmail.com",
-    "username": "adv46072",
+    "username": "1233444",
     "password": "adv46072",
     "age": "19",
     "isAdmin": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "id": 3,
@@ -26,6 +26,24 @@
     "username": "adv46073",
     "password": "adv46073",
     "age": "19",
+    "isAdmin": false,
+    "isDeleted": false
+  },
+  {
+    "id": 4,
+    "name": "1232123213",
+    "email": "archan.vadgama@simformsolutions.com",
+    "age": "12",
+    "username": "adv4607",
+    "isAdmin": false,
+    "isDeleted": false
+  },
+  {
+    "id": 5,
+    "name": "Archan",
+    "email": "adv4607@gmail.com",
+    "age": "121",
+    "username": "123",
     "isAdmin": false,
     "isDeleted": false
   }

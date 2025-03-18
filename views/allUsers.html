@@ -1,65 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>All Users</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <a href="/dashboard">Dashboard</a> &nbsp;&nbsp;
     <a href="/all-user">All users</a> &nbsp;&nbsp;
     <a href="/add-user">Add User</a> &nbsp;&nbsp;
-    <br>
+    <a href="/logout">Logout</a> &nbsp;&nbsp;
+    <br />
     <h1>All Users</h1>
     <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Username</th>
-                <th>Age</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="setResponse">
-        </tbody>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Username</th>
+          <th>Age</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="setResponse"></tbody>
     </table>
+
     <script>
-        fetch('/api/all-user').then(response => response.json()).then(data => {
-            let setResponse = '';
-            data.forEach(user => {
-                let isDeleted = user.isDeleted ? 'Restore' : 'Delete';
+      function setTableData() {
+        fetch("/api/all-user")
+          .then((response) => response.json())
+          .then((data) => {
+            let setResponse = "";
+            data.forEach((user) => {
+              let isDeleted = user.isDeleted ? "Restore" : "Delete";
+              if (!user.isAdmin) {
                 setResponse += `
-                    <tr>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${user.username}</td>
-                        <td>${user.age}</td>
-                        <td>
-                            <a href="/find-user/${user.id}">Edit</a>
-                            &nbsp;&nbsp;
-                            &nbsp;&nbsp;
-                            <a href="/delete-user/${user.id}">${isDeleted}</a></td>
-                    </tr>
-                `;
+              <tr>
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${user.username}</td>
+                <td>${user.age}</td>
+                <td>
+                  <button class="edit">Edit</button>
+                  &nbsp;&nbsp;
+                  <button class="deleteRestore">${isDeleted}</button>
+                  ${
+                    user.isDeleted
+                      ? '&nbsp;&nbsp;<button class="hardDelete">Permanent Delete</button>'
+                      : ""
+                  }
+                </td>
+              </tr>
+            `;
+              }
             });
-            document.getElementById('setResponse').innerHTML = setResponse;
-        });
-    </script>    
-</body>
+            document.getElementById("setResponse").innerHTML = setResponse;
+          });
+      }
+      setTableData();
+      let tableRows = document.getElementById("setResponse")
+      tableRows.addEventListener("click", function (e) {
+        let id = e.target.parentNode.parentNode.children[0].innerText;
+        let action = e.target.innerText;
+        if (e.target && e.target.className == "edit") {
+          window.location.href = `/edit-user/${id}`;
+        }
+        if (e.target && e.target.className == "hardDelete") {
+            fetch(`/api/hard-delete-user/${id}`, {
+                method: "DELETE",
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ action }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    setTableData();
+                });
+        }
+        if (e.target && e.target.className == "deleteRestore") {
+          fetch(`/api/delete-user/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ action }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              setTableData();
+            });
+        }
+      });
+    </script>
+  </body>
 </html>

@@ -1,5 +1,5 @@
-const { getUser } = require('../services/auth');
-const fs = require('fs');
+const { getToken } = require("../services/auth");
+const fs = require("fs");
 const FILE_PATH = "logs/users.json";
 
 const readJSON = (callback, res) => {
@@ -9,7 +9,7 @@ const readJSON = (callback, res) => {
   });
 };
 
-async function checkLogin(req, res, next) {
+function checkLogin(req, res, next) {
   if (!req.cookies?.userToken) {
     res.send(`
         <html>
@@ -30,13 +30,17 @@ async function checkLogin(req, res, next) {
           </body>
         </html>
       `);
-    } else {
-    let token = getUser(req.cookies.userToken);
-    let decodeUserId = parseInt(atob(token.user_id));
+  } else {
+    let token = getToken(req.cookies.userToken);
+
+    if (!token.status) {
+      res.end(`<h1>${token.msg}</h1>`);
+    }
+    let decodeUserId = parseInt(atob(token.msg.user_id));
 
     readJSON((users) => {
-      const user = users.find(user => user.id == decodeUserId);
-      if (!user) return res.redirect('/');
+      const user = users.find((user) => user.id == decodeUserId);
+      if (!user) return res.redirect("/");
 
       next();
     }, res);
