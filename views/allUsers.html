@@ -48,12 +48,12 @@
           .then((response) => response.json())
           .then((data) => {
             let setResponse = "";
-            data.forEach((user) => {
+            data.forEach((user, index) => {
               let isDeleted = user.isDeleted ? "Restore" : "Delete";
               if (!user.isAdmin) {
                 setResponse += `
-              <tr>
-                <td>${user.id}</td>
+              <tr data-user-id="${user.id}">
+                <td>${index}</td>
                 <td>${user.name}</td>
                 <td>${user.email}</td>
                 <td>${user.username}</td>
@@ -78,7 +78,7 @@
       setTableData();
       let tableRows = document.getElementById("setResponse")
       tableRows.addEventListener("click", function (e) {
-        let id = e.target.parentNode.parentNode.children[0].innerText;
+        let id = e.target.closest('tr').getAttribute('data-user-id');
         let action = e.target.innerText;
         if (e.target && e.target.className == "edit") {
           window.location.href = `/edit-user/${id}`;

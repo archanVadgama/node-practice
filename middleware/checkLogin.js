@@ -34,7 +34,23 @@ function checkLogin(req, res, next) {
     let token = getToken(req.cookies.userToken);
 
     if (!token.status) {
-      res.end(`<h1>${token.msg}</h1>`);
+      res.end(`<html>
+          <body>
+            <h1>${token.msg}</h1> <h4>Redirecting to login page in <span id="countdown">3</span> seconds...</h4>
+            <script>
+              let countdown = 4;
+              const countdownElement = document.getElementById('countdown');
+              const interval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                if (countdown === 0) {
+                  clearInterval(interval);
+                  window.location.href = '/';
+                }
+              }, 1000);
+            </script>
+          </body>
+        </html>`);
     }
     let decodeUserId = parseInt(atob(token.msg.user_id));
 

@@ -25,16 +25,20 @@
     <h1>Edit Users</h1>
     <form id="editUserForm">
       <label for="name">Name:</label>
-      <input type="text" id="name" name="name" /><br /><br />
-
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" /><br /><br />
-
-      <label for="age">Age:</label>
-      <input type="number" id="age" name="age" /><br /><br />
-
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" /><br /><br />
+        <input type="text" id="name" name="name" /><br />
+        <span id="nameError" style="color: red"></span><br /><br />
+        
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" /><br />
+        <span id="emailError" style="color: red"></span><br /><br />
+        
+        <label for="age">Age:</label>
+        <input type="text" id="age" name="age" /><br />
+        <span id="ageError" style="color: red"></span><br /><br />
+        
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" /><br />
+        <span id="usernameError" style="color: red"></span><br /><br />
 
       <input type="submit" value="Edit User" />
     </form>
@@ -55,30 +59,42 @@
           .catch((error) => console.error("Error fetching user data:", error));
       }
 
-      form.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const formData = {
-          name: document.getElementById("name").value,
-          email: document.getElementById("email").value,
-          age: document.getElementById("age").value,
-          username: document.getElementById("username").value,
-        };
-
-        fetch(`/api/edit-user/${userId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            alert("User updated successfully!");
+      form.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const formData = new FormData(form);
+  
+          // it will convert data in an Object from
+          let data = Object.fromEntries(formData);
+  
+          const response = await fetch(`/api/edit-user/${userId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+  
+          const responseData = await response.json();
+          handleErrors(responseData, formData);
+        });
+  
+        function handleErrors(data, formData) {
+          let noErrors = true;
+          for (let [key] of formData.entries()) {
+            const errorElement = document.getElementById(`${key}Error`);
+            if (data[key]) {
+              errorElement.innerText = data[key];
+              noErrors = false;
+            } else {
+              errorElement.innerText = "";
+            }
+          }
+  
+          if (noErrors) {
+            alert("User Edited successfully!");
             window.location.href = "/all-user";
-          })
-          .catch((error) => console.error("Error updating user:", error));
-      });
+          }
+        }
     </script>
   </body>
 </html>

@@ -7,15 +7,56 @@
 </head>
 <body>
     <h1>LogIn</h1>
-    <form action="/" method="post">
+    <form id="loginForm" >
         <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username"><br><br>
+        <input type="text" id="username" name="username"><br>
+        <span id="usernameError" style="color:red;"></span><br><br>
         <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br><br><br>
+        <input type="password" id="password" name="password"><br>
+        <span id="passwordError" style="color:red;"></span><br><br><br>
         <input type="submit" value="LogIn">
     </form>
     <p>Not Register? 
         <a href="/signup">Sign-Up</a>
     </p>
+    <script>
+        const form = document.getElementById("loginForm");
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+
+            // it will convert data in an Object from
+            let data = Object.fromEntries(formData);
+
+            const response = await fetch(`/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            const responseData = await response.json();
+            handleErrors(responseData, formData);
+        });
+
+        function handleErrors(data, formData) {
+            let noErrors = true;
+            for (let [key] of formData.entries()) {
+            const errorElement = document.getElementById(`${key}Error`);
+            if (data[key]) {
+                errorElement.innerText = data[key];
+                noErrors = false;
+            } else {
+                errorElement.innerText = "";
+            }
+            }
+
+            if (noErrors) {
+                window.location.href = "/dashboard";
+            }
+        }
+    </script>
 </body>
 </html>

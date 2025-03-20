@@ -24,42 +24,67 @@
     <br />
     <h1>Add Users</h1>
     <form id="addUserForm">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" /><br /><br />
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" /><br /><br />
-      <label for="age">Age:</label>
-      <input type="age" id="age" name="age" /><br /><br />
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" /><br /><br />
-      <input type="submit" value="Add User" />
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" /><br />
+        <span id="nameError" style="color: red"></span><br /><br />
+        
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" /><br />
+        <span id="emailError" style="color: red"></span><br /><br />
+        
+        <label for="age">Age:</label>
+        <input type="text" id="age" name="age" /><br />
+        <span id="ageError" style="color: red"></span><br /><br />
+        
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" /><br />
+        <span id="usernameError" style="color: red"></span><br /><br />
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" /><br />
+        <span id="passwordError" style="color: red"></span><br /><br /><br />
+        
+        <input type="submit" value="Add User" />
     </form>
     <script>
-      const form = document.getElementById("addUserForm");
-      form.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const formData = {
-          name: document.getElementById("name").value,
-          email: document.getElementById("email").value,
-          age: document.getElementById("age").value,
-          username: document.getElementById("username").value,
-        };
-
-        fetch(`/api/add-user`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        })
-          .then((response) => response.json())
-          .then((data) => {
+        const form = document.getElementById("addUserForm");
+  
+        form.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const formData = new FormData(form);
+  
+          // it will convert data in an Object from
+          let data = Object.fromEntries(formData);
+  
+          const response = await fetch(`/api/add-user`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+  
+          const responseData = await response.json();
+          handleErrors(responseData, formData);
+        });
+  
+        function handleErrors(data, formData) {
+          let noErrors = true;
+          for (let [key] of formData.entries()) {
+            const errorElement = document.getElementById(`${key}Error`);
+            if (data[key]) {
+              errorElement.innerText = data[key];
+              noErrors = false;
+            } else {
+              errorElement.innerText = "";
+            }
+          }
+  
+          if (noErrors) {
             alert("User Added successfully!");
             window.location.href = "/all-user";
-          })
-          .catch((error) => console.error("Error updating user:", error));
-      });
-    </script>
+          }
+        }
+      </script>
   </body>
 </html>

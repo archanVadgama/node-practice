@@ -3,6 +3,8 @@ const { setToken } = require("../services/auth");
 const cookieParser = require("cookie-parser");
 const { checkLogin } = require("../middleware/checkLogin");
 const { readJSON, writeJSON } = require("../services/fileHandling");
+const { loginSchema, addOrSignupSchema } = require("../services/validationSchema");
+const { checkSchema, validationResult } = require("express-validator");
 const userApi = require("./userApi");
 
 const app = express();
@@ -17,10 +19,13 @@ app.get("/", (req, res) => {
   res.sendFile("/index.html", { root: "views" });
 });
 
-app.post("/", (req, res) => {
-  const { username, password } = req.body;
+app.post("/", checkSchema(loginSchema), (req, res) => {
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(400).json(result.formatWith((msg) => msg.msg).mapped());
+  }
 
-  if (!username && !password) return res.redirect("/");
+  const { username, password } = req.body;
 
   readJSON((users) => {
     const user = users.find(
@@ -28,9 +33,9 @@ app.post("/", (req, res) => {
     );
     if (user) {
       res.cookie("userToken", setToken({ user_id: btoa(user.id) }));
-      res.redirect("/dashboard");
+      res.status(200).json({ redirect: "/dashboard" });
     } else {
-      res.redirect("/");
+      res.status(400).json({ password: "Invalid username or password" });
     }
   }, res);
 });
@@ -39,30 +44,17 @@ app.get("/signup", (req, res) => {
   res.sendFile("/signup.html", { root: "views" });
 });
 
-app.post("/signup", (req, res) => {
+app.post("/signup", checkSchema(addOrSignupSchema), (req, res) => {
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(400).json(result.formatWith((msg) => msg.msg).mapped());
+  }
+
   readJSON((users) => {
     const newUser = { id: users.length + 1, ...req.body, isAdmin: false, isDeleted: false };
     writeJSON([...users, newUser], res, "New User Added");
   }, res);
-  res.send(`
-    <html>
-      <body>
-        <h2>Sign Up Successfully.</h2> <h4>Redirecting to login page in <span id="countdown">3</span> seconds...</h4>
-        <script>
-          let countdown = 4;
-          const countdownElement = document.getElementById('countdown');
-          const interval = setInterval(() => {
-            countdown--;
-            countdownElement.textContent = countdown;
-            if (countdown === 0) {
-              clearInterval(interval);
-              window.location.href = '/';
-            }
-          }, 1000);
-        </script>
-      </body>
-    </html>
-  `);
+  res.status(200).json({ redirect: "/dashboard" });
 });
 
 app.use(checkLogin)

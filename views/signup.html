@@ -1,27 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign-Up</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Sign-Up</h1>
-    <form action="/signup" method="post">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name"><br><br>
-        <label for="email">Email:</label><br>
-        <input type="text" id="email" name="email"><br><br>
-        <label for="age">Age:</label><br>
-        <input type="text" id="age" name="age"><br><br>
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username"><br><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br><br><br>
-        <input type="submit" value="Sign-Up">
+    <form id="signupFrom">
+      <label for="name">Name:</label><br />
+      <input type="text" id="name" name="name" /><br />
+      <span id="nameError" style="color: red"></span><br /><br />
+      <label for="email">Email:</label><br />
+      <input type="text" id="email" name="email" /><br />
+      <span id="emailError" style="color: red"></span><br /><br />
+      <label for="age">Age:</label><br />
+      <input type="text" id="age" name="age" /><br />
+      <span id="ageError" style="color: red"></span><br /><br />
+      <label for="username">Username:</label><br />
+      <input type="text" id="username" name="username" /><br />
+      <span id="usernameError" style="color: red"></span><br /><br />
+      <label for="password">Password:</label><br />
+      <input type="password" id="password" name="password" /><br />
+      <span id="passwordError" style="color: red"></span><br /><br /><br />
+      <input type="submit" value="Sign-Up" />
     </form>
-    <p>Already Register? 
-        <a href="/">LogIn</a>
+    <p>
+      Already Register?
+      <a href="/">LogIn</a>
     </p>
-</body>
+    <script>
+      const form = document.getElementById("signupFrom");
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+
+        // it will convert data in an Object from
+        let data = Object.fromEntries(formData);
+
+        const response = await fetch(`/signup`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        const responseData = await response.json();
+        handleErrors(responseData, formData);
+      });
+
+      function handleErrors(data, formData) {
+        let noErrors = true;
+        for (let [key] of formData.entries()) {
+          const errorElement = document.getElementById(`${key}Error`);
+          if (data[key]) {
+            errorElement.innerText = data[key];
+            noErrors = false;
+          } else {
+            errorElement.innerText = "";
+          }
+        }
+
+        if (noErrors) {
+          document.body.innerHTML = `<h2>Sign Up Successfully.</h2>
+                    <h4>Redirecting to login page in <span id='countdown'>3</span> seconds...</h4>`;
+          let countdown = 3;
+          const countdownElement = document.getElementById("countdown");
+          const interval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown === 0) {
+              clearInterval(interval);
+              window.location.href = "/";
+            }
+          }, 1000);
+        }
+      }
+    </script>
+  </body>
 </html>
