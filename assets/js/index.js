@@ -9,7 +9,10 @@ const FILE_PATH = "assets/users.json";
 
 const readJSON = (callback, res) => {
   fs.readFile(FILE_PATH, (err, data) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err) {
+      console.error('Failed to read JSON file:', err);
+      return res.status(500).json({ error: "Server Error" });
+    }
     callback(JSON.parse(data));
   });
 };
