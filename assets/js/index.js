@@ -45,7 +45,12 @@ app.get("/find-user/:id", (req, res) => {
 
 app.post("/add-user", (req, res) => {
   readJSON((users) => {
-    const newUser = { id: users.length + 1, ...req.body, isDeleted: false };
+    const maxId = users.reduce((max, user) => {
+      const userId = Number(user.id);
+      return Number.isInteger(userId) && userId > max ? userId : max;
+    }, 0);
+
+    const newUser = { id: maxId + 1, ...req.body, isDeleted: false };
     writeJSON([...users, newUser], res, "New User Added");
   }, res);
 });
