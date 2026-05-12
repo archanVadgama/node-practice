@@ -38,7 +38,8 @@ app.get("/all-user", (req, res) => {
 app.get("/find-user/:id", (req, res) => {
   readJSON((users) => {
     const user = users.find(user => user.id == req.params.id);
-    res.json(user || { error: "User not found" });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
   }, res);
 });
 
