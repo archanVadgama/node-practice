@@ -1,0 +1,24 @@
+{
+  "name": "practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "assets/js/index.js",
+  "scripts": {
+    "start": "nodemon assets/js/index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/archanVadgama/node-practice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/archanVadgama/node-practice/issues"
+  },
+  "homepage": "https://github.com/archanVadgama/node-practice#readme",
+  "dependencies": {
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
